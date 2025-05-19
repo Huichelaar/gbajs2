@@ -107,7 +107,7 @@ class GameBoyAdvance {
 	setRom(rom) {
 		this.reset();
 
-		this.rom = this.mmu.loadRom(rom, true);
+		this.rom = this.mmu.loadRom(defaultROM, true);
 		if (!this.rom) {
 			return false;
 		}
