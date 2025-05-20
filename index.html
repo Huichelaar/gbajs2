@@ -112,15 +112,12 @@
 				e.setAttribute('class', 'hidden');
 			}
 
-			function run(file) {
-				let dead = document.getElementById('loader');
-				dead.value = '';
-				let load = document.getElementById('select');
-				load.textContent = 'Loading...';
-				load.removeAttribute('onclick');
+			function run() {
+				let load = document.getElementById('power');
+        load.disabled = true;
 				let pause = document.getElementById('pause');
 				pause.textContent = 'PAUSE';
-				gba.loadRomFromFile(file, function (result) {
+				gba.loadRomFromFile(function (result) {
 					if (result) {
 						for (let i = 0; i < runCommands.length; ++i) {
 							runCommands[i]();
@@ -129,14 +126,23 @@
 						fadeOut('preload', 'ingame');
 						fadeOut('instructions', null, true);
 						gba.runStable();
+            
+            // Delay turning the power off immediately so
+            // fading can catch up.
+            load.onclick = reset;
+            setTimeout(function () {
+              load.disabled = false;
+            }, 2000);
 					} else {
 						load.textContent = 'FAILED';
+            
+            // Delay turning the power on immediately to
+            // allow the system to recover.
+            load.onclick = run;
 						setTimeout(function () {
-							load.textContent = 'SELECT';
-							load.onclick = function () {
-								document.getElementById('loader').click();
-							};
-						}, 3000);
+							load.textContent = 'POWER';
+							load.disabled = false;
+						}, 2000);
 					}
 				});
 			}
@@ -144,8 +150,8 @@
 			function reset() {
 				gba.pause();
 				gba.reset();
-				let load = document.getElementById('select');
-				load.textContent = 'SELECT';
+				let load = document.getElementById('power');
+				load.disabled = true;
 				let crash = document.getElementById('crash');
 				if (crash) {
 					let context = gba.targetCanvas.getContext('2d');
@@ -161,10 +167,14 @@
 						gba.video.drawCallback
 					);
 				}
-				load.onclick = function () {
-					document.getElementById('loader').click();
-				};
-				fadeOut('ingame', 'preload');
+        fadeOut('ingame', 'preload');
+        
+        // Delay turning the power on immediately to
+        // allow the system to recover.
+        load.onclick = run;
+        setTimeout(function () {
+				  load.disabled = false;
+        }, 2000);
 			}
 
 			function uploadSavedataPending(file) {
@@ -357,20 +367,17 @@
 			</table>
 		</section>
 		<section id="controls">
-			<div id="preload">
-				<button
+      <div id="agnostic">
+        <button
 					class="bigbutton"
-					id="select"
-					onclick="document.getElementById('loader').click()"
+					id="power"
+					onclick="run();"
 				>
-					SELECT
+					POWER
 				</button>
-				<input
-					id="loader"
-					type="file"
-					accept=".gba"
-					onchange="run(this.files[0]);"
-				/>
+      </div>
+    
+			<div id="preload">
 				<button onclick="document.getElementById('saveloader').click()">
 					Upload Savegame
 				</button>

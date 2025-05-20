@@ -104,7 +104,7 @@ class GameBoyAdvance {
 	setBios(bios, real) {
 		this.mmu.loadBios(bios, real);
 	}
-	setRom(rom) {
+	setRom() {
 		this.reset();
 
 		this.rom = this.mmu.loadRom(defaultROM, true);
@@ -117,16 +117,12 @@ class GameBoyAdvance {
 	hasRom() {
 		return !!this.rom;
 	}
-	loadRomFromFile(romFile, callback) {
-		var reader = new FileReader();
-		var self = this;
-		reader.onload = function (e) {
-			var result = self.setRom(e.target.result);
-			if (callback) {
-				callback(result);
-			}
-		};
-		reader.readAsArrayBuffer(romFile);
+	loadRomFromFile(callback) {
+    var self = this;
+    var result = self.setRom();
+    if (callback) {
+      callback(result);
+    }
 	}
 	reset() {
 		this.audio.pause(true);
