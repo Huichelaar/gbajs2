@@ -1,5 +1,5 @@
 body {
-	background: url('bg.png') no-repeat top center, #765490;
+	background: url('bgSmall.png') no-repeat top center, #765490;
 	text-align: center;
 	margin: 0;
 	color: white;
@@ -28,8 +28,6 @@ button {
 	image-rendering: -webkit-optimize-contrast;
 	image-rendering: -moz-crisp-edges;
 	image-rendering: -o-crisp-edges;
-	zoom: 2;
-	-o-transform: scale(2);
 }
 
 #crash {
