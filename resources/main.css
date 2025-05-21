@@ -1,5 +1,5 @@
 body {
-	background: url('bgSmall.png') no-repeat top center, #765490;
+	background: url('bgSmall.png') no-repeat top left, #765490;
 	text-align: center;
 	margin: 0;
 	color: white;
@@ -20,11 +20,14 @@ button {
 #screen {
 	margin-top: 85px;
 	margin-bottom: -405px; /* Take up no height */
+  display: table;     /* I don't understand how, but this gets it to center. */
+  margin: 0 auto;     /* Courtesy of romprzy at: https://stackoverflow.com/a/16950278 */   
 }
 
 #screen[width="240"] {
 	margin-top: 42.5px;
 	margin-bottom: -363px; /* Take up no height */
+  margin-left: 43px;
 	image-rendering: -webkit-optimize-contrast;
 	image-rendering: -moz-crisp-edges;
 	image-rendering: -o-crisp-edges;
@@ -44,9 +47,13 @@ a:link, a:visited {
 }
 
 #controls {
-	margin-top: 60px;
-	margin-right: 50%;
-	height: 0;
+  margin-top: 450px;
+  margin-left: -150px;
+}
+
+#controlsRight {
+  margin-top: -111px;
+  margin-left: 170px;
 }
 
 #controls > *, #instructions {
@@ -60,18 +67,26 @@ a:link, a:visited {
 #controls button, #mapping td, #sound, #controls label {
 	background: transparent;
 	border: 0px solid rgba(192, 128, 192, 0.5);
-	border-top: 2px solid rgba(96, 48, 96, 0.8);
-	border-bottom: 2px solid rgba(255, 200, 255, 0.5);
 	border-radius: 30px;
 	color: white;
 	font-weight: bold;
 	display: block;
 	padding: 6px 15px;
-	margin-right: 330px;
-	margin-left: auto;
-	margin-top: 20px;
+	margin-right: auto;
+	margin-left: 160px;
+	margin-top: 7px;
 	font-size: 20px;
 	text-shadow: 0 2px rgba(96, 48, 96, 0.8), 0 -1px rgba(255, 200, 255, 0.5);
+}
+
+#controls button, #controls label {
+  border-top: 2px solid rgba(255, 200, 255, 0.5);
+	border-bottom: 2px solid rgba(96, 48, 96, 0.8);
+}
+
+#controls button:focus, #mapping td, #sound, #controls label:focus {
+	border-top: 2px solid rgba(96, 48, 96, 0.8);
+	border-bottom: 2px solid rgba(255, 200, 255, 0.5);
 }
 
 #controls .bigbutton, #mapping td {
@@ -247,12 +262,17 @@ ul#links li:not(:first-child)::before {
 }
 
 #gameinfo {
-	margin-top: 50px;
+	margin-top: -419px;
 	margin-bottom: -50px;
-	margin-left: 50%;
-	padding-left: 320px;
+	margin-left: 150px;
+	padding-left: 160px;
 	width: 300px;
 	height: 0;
+}
+
+#credits {
+  margin-top: 20px;
+  margin-left: -300px;
 }
 
 #instructions {
