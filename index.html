@@ -39,13 +39,13 @@
 					let screen = document.getElementById('screen');
 					if (screen.getAttribute('class') === 'dead') {
 						console.log(
-							'We appear to have crashed multiple times without reseting.'
+							'We appear to have crashed multiple times without resetting.'
 						);
 						return;
 					}
 					let crash = document.createElement('img');
 					crash.setAttribute('id', 'crash');
-					crash.setAttribute('src', 'resources/crash.png');
+					crash.setAttribute('src', 'resources/crashSmall.png');
 					screen.parentElement.insertBefore(crash, screen);
 					screen.setAttribute('class', 'dead');
 				});
@@ -82,6 +82,36 @@
 				}
 			};
 
+      // Returns true if GBA is turned on.
+      // Honestly, I don't calling gba.hasRom() is
+      // the best indicator, but I haven't found a better one yet.
+      function isGBAOn() {
+        return gba.hasRom()
+      }
+
+      // Draws button as released.
+      function releaseButton(button) {
+        button.classList.remove("heldButton");
+      }
+      
+      // Draws button as held.
+      function holdButton(button) {
+        button.classList.add("heldButton");
+      }
+
+      // Disables given button. Also
+      // sets button's colours to disabled colours.
+      function disableButton(button) {
+        button.disabled = true;
+      }
+      
+      // Enables given button. Also
+      // sets button's colours to enabled colours.
+      function enableButton(button) {
+        button.disabled = false;
+        releaseButton(button);
+      }
+
 			function fadeOut(id, nextId, kill) {
 				let e = document.getElementById(id);
 				let e2 = document.getElementById(nextId);
@@ -116,9 +146,9 @@
 
 			function run() {
 				let load = document.getElementById('power');
-        load.disabled = true;
+        disableButton(load);
 				let pause = document.getElementById('pause');
-				pause.textContent = 'PAUSE';
+				enableButton(pause);
 				gba.loadRomFromFile(function (result) {
 					if (result) {
 						for (let i = 0; i < runCommands.length; ++i) {
@@ -133,8 +163,8 @@
             // fading can catch up.
             load.onclick = reset;
             setTimeout(function () {
-              load.disabled = false;
-            }, 2000);
+              enableButton(load);
+            }, 1000);
 					} else {
 						load.textContent = 'FAILED';
             
@@ -142,9 +172,8 @@
             // allow the system to 'recover'.
             load.onclick = run;
 						setTimeout(function () {
-							load.textContent = 'POWER';
-							load.disabled = false;
-						}, 2000);
+							enableButton(load);
+						}, 1000);
 					}
 				});
 			}
@@ -152,8 +181,12 @@
 			function reset() {
 				gba.pause();
 				gba.reset();
+        gba.rom = null;
 				let load = document.getElementById('power');
-				load.disabled = true;
+        disableButton(load);
+        let pause = document.getElementById('pause');
+        disableButton(pause);
+        
 				let crash = document.getElementById('crash');
 				if (crash) {
 					let context = gba.targetCanvas.getContext('2d');
@@ -175,7 +208,7 @@
         // allow the system to 'recover'.
         load.onclick = run;
         setTimeout(function () {
-				  load.disabled = false;
+				  enableButton(load);
         }, 2000);
 			}
 
@@ -186,6 +219,10 @@
 			}
 
 			function togglePause() {
+        // Don't pause if gba doesn't have a ROM.
+        if (!isGBAOn())
+          return;
+      
 				let e = document.getElementById('pause');
 				if (gba.paused) {
 					if (debug && debug.gbaCon) {
@@ -194,12 +231,14 @@
 						gba.runStable();
 					}
 					e.textContent = 'PAUSE';
+          releaseButton(e);
 				} else {
 					if (debug && debug.gbaCon) {
 						debug.gbaCon.pause();
 					} else {
 						gba.pause();
 					}
+          holdButton(e);
 				}
 			}
 
@@ -316,6 +355,21 @@
 			);
 
 			const fullScreen = () => {
+        // Don't go full screen if GBA is not powered on.
+        if (!isGBAOn())
+          return;
+        
+        // Hide buttons and other text when in full screen.
+        const elements = ['controls', 'credits', 'gameinfo'];
+        elements.forEach(function(elem, i) {
+          let e = document.getElementById(elem);
+          e.style.display = 'none';
+        });
+        
+        // Also hide GBA.js overlay.
+        let e = document.getElementsByTagName('body')[0];
+        e.style['background'] = "#765490";
+        
 				document.getElementById('screen').requestFullscreen();
 			};
 		</script>
@@ -329,7 +383,7 @@
           <button onclick="screenshot()">Screenshot</button>
         </div>
         <div id="controlsRight">
-          <button id="pause" class="bigbutton" onclick="togglePause()">PAUSE</button>
+          <button id="pause" class="bigbutton" onclick="togglePause()" disabled>PAUSE</button>
           <button onclick="fullScreen()">Full screen</button>
         </div>
         <div id="preload">

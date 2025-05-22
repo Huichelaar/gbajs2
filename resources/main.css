@@ -34,8 +34,8 @@ button {
 }
 
 #crash {
-	margin-top: 100px;
-	margin-bottom: -356px;
+  margin: 42.5px 0 -363px -283px;
+  padding: 0 0 0 0;
 }
 
 p:first-child {
@@ -65,7 +65,7 @@ a:link, a:visited {
 }
 
 #controls button, #mapping td, #sound, #controls label {
-	background: transparent;
+	background: #765490;
 	border: 0px solid rgba(192, 128, 192, 0.5);
 	border-radius: 30px;
 	color: white;
@@ -79,19 +79,25 @@ a:link, a:visited {
 	text-shadow: 0 2px rgba(96, 48, 96, 0.8), 0 -1px rgba(255, 200, 255, 0.5);
 }
 
-#controls button, #controls label {
-  border-top: 2px solid rgba(255, 200, 255, 0.5);
-	border-bottom: 2px solid rgba(96, 48, 96, 0.8);
-}
-
-#controls button:focus, #mapping td, #sound, #controls label:focus {
-	border-top: 2px solid rgba(96, 48, 96, 0.8);
-	border-bottom: 2px solid rgba(255, 200, 255, 0.5);
-}
-
 #controls .bigbutton, #mapping td {
 	font-size: 30px;
 	padding: 8px 25px;
+}
+
+#controls button:active, #controls .heldButton, #mapping td, #sound {
+  border-top: 2px solid #603060;
+	border-bottom: 2px solid #FFC8FF;
+}
+
+#controls button:disabled {
+  background: #563470;
+  border-top: 2px solid #DFA8DF;
+	border-bottom: 2px solid #401040;
+}
+
+#controls button, #controls label {
+  border-top: 2px solid #FFC8FF;
+	border-bottom: 2px solid #603060;
 }
 
 #moreinfo {
