@@ -145,10 +145,12 @@
 			}
 
 			function run() {
+      
+        // Disable power button temporarily to avoid overburdening the system.
 				let load = document.getElementById('power');
         disableButton(load);
-				let pause = document.getElementById('pause');
-				enableButton(pause);
+
+        // Load ROM file.
 				gba.loadRomFromFile(function (result) {
 					if (result) {
 						for (let i = 0; i < runCommands.length; ++i) {
@@ -158,6 +160,18 @@
 						fadeOut('preload', 'ingame');
 						fadeOut('instructions', null, true);
 						gba.runStable();
+            
+            // Enable pause button, as now there's a game that can be paused.
+            let pause = document.getElementById('pause');
+            enableButton(pause);
+            
+            // Enable Full Screen mode toggle as now there's a game being displayed.
+            let fullScreen = document.getElementById('fullScreen');
+            enableButton(fullScreen);
+            
+            // Enable screenshot functionality as now there's a game being displayed.
+            let screenShot = document.getElementById('screenShot');
+            enableButton(screenShot);
             
             // Delay turning the power off immediately so
             // fading can catch up.
@@ -182,10 +196,22 @@
 				gba.pause();
 				gba.reset();
         gba.rom = null;
+        
+        // Disable power button temporarily to avoid overburdening the system.
 				let load = document.getElementById('power');
         disableButton(load);
+        
+        // Disable pause button, as there isn't a game running currently.
         let pause = document.getElementById('pause');
         disableButton(pause);
+        
+        // Disable Full Screen mode toggle as no game is being displayed.
+        let fullScreen = document.getElementById('fullScreen');
+        disableButton(fullScreen);
+        
+        // Disable screenshot functionality as no game is being displayed.
+        let screenShot = document.getElementById('screenShot');
+        disableButton(screenShot);
         
 				let crash = document.getElementById('crash');
 				if (crash) {
@@ -243,6 +269,10 @@
 			}
 
 			function screenshot() {
+        // Don't take a screenshot if GBA is not powered on.
+        if (!isGBAOn())
+          return;
+      
 				let canvas = gba.indirectCanvas;
 				let data = canvas.toDataURL('image/png');
 				let image = new Image();
@@ -353,22 +383,45 @@
 				},
 				false
 			);
+      
+      document.addEventListener(
+        "fullscreenchange",
+        (event) => {
+          const elements = ['controls', 'credits', 'gameinfo'];
+        
+          if (document.fullscreenElement) {
+            // Entering full screen.
+            
+            // Hide buttons and other text when in full screen.
+            elements.forEach(function(elem, i) {
+              let e = document.getElementById(elem);
+              e.style.display = 'none';
+            });
+            
+            // Also hide GBA.js overlay.
+            let e = document.getElementsByTagName('body')[0];
+            e.style['background'] = "#765490";
+          } else {
+            // Exiting full screen.
+            
+            // Display buttons and other text when leaving full screen.
+            elements.forEach(function(elem, i) {
+              let e = document.getElementById(elem);
+              e.style.display = 'block';
+            });
+            
+            // Also display GBA.js overlay.
+            let e = document.getElementsByTagName('body')[0];
+            e.style['background'] = "url('resources/bgSmall.png') no-repeat top left, #765490";
+          }
+        }
+      )
 
+      // Go full screen if the full screen button is pressed.
 			const fullScreen = () => {
         // Don't go full screen if GBA is not powered on.
         if (!isGBAOn())
           return;
-        
-        // Hide buttons and other text when in full screen.
-        const elements = ['controls', 'credits', 'gameinfo'];
-        elements.forEach(function(elem, i) {
-          let e = document.getElementById(elem);
-          e.style.display = 'none';
-        });
-        
-        // Also hide GBA.js overlay.
-        let e = document.getElementsByTagName('body')[0];
-        e.style['background'] = "#765490";
         
 				document.getElementById('screen').requestFullscreen();
 			};
@@ -380,11 +433,11 @@
       <section id="controls">
         <div id="controlsLeft">
           <button class="bigbutton" id="power" onclick="run();">POWER</button>
-          <button onclick="screenshot()">Screenshot</button>
+          <button id="screenShot" onclick="screenshot()" disabled>Screenshot</button>
         </div>
         <div id="controlsRight">
           <button id="pause" class="bigbutton" onclick="togglePause()" disabled>PAUSE</button>
-          <button onclick="fullScreen()">Full screen</button>
+          <button id="fullScreen" onclick="fullScreen()" disabled>Full screen</button>
         </div>
         <div id="preload">
         </div>
